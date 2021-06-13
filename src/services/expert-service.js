@@ -2,47 +2,42 @@ const BASE_URL = 'http://localhost:3001/api/experts';
 
 
 
-async function fetchExperts(user) {
-  const token = await user.getIdToken();
+function fetchExperts(user) {
   return fetch(BASE_URL, {
     headers: {
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + user
     }
   }).then(res => res.json());
 }
 
-async function updateExpert({ expert, level, _id}, user) {
-  const token = await user.getIdToken();
+async function updateExpert({ name,email,phone,time,_id }) {
   return fetch(`${BASE_URL}/${_id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'Application/json',
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + _id
       },
-      body: JSON.stringify({ expert, level })
+      body: JSON.stringify({ name,email, phone, time})
     }).then(res => res.json());
 }
 
-async function createExpert(data, user) {
-  const token = await user.getIdToken();
+ function createExpert(data, user) {
   return fetch(BASE_URL, {
       method: 'POST',
       headers: {
         'Content-type': 'Application/json',
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + user
       },
-      body: JSON.stringify({...data, uid: user.uid})
+      body: JSON.stringify({...data, user})
     }).then(res => res.json())
 }
 
 
-async function deleteExpert(skillId, user) {
-  const token = await user.getIdToken();
-
-  return fetch(`${BASE_URL}/${skillId}`, {
+async function deleteExpert(expertId, user) {
+  return fetch(`${BASE_URL}/${expertId}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + user
       }
   }).then(res => res.json());
 }

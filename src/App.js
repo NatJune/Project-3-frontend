@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { auth } from './services/firebase';
-import Header from './components/Header/Header';
+// import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Navbar from './components/Navbar/Navbar';
+// import Expert from './components/Expert/Expert';
+// import Comment from './components/Comment/Comment';
 import "./App.css";
 import { 
   fetchExperts, 
@@ -13,7 +17,9 @@ export default function App() {
     experts: [],
     newExpert: {
       expert: "",
-      level: "3"
+      names: "",
+      email:"",
+      phone:"",
     },
     editMode: false
   });
@@ -23,32 +29,29 @@ export default function App() {
   });
 
   useEffect(function() {
-    async function getAppData() {
-
-      if(!userState.user) return;
-
-      const experts = await fetchExperts(userState.user.uid);
-      
-      setState(prevState => ({
-        ...prevState,
-        experts
-      }));
+    async function getData() {
+      if(!!userState.user){
+        const allExperts = await fetchExperts(userState.user)
+          const experts = allExperts.filter(expert => expert.uid === userState.user.uid)
+        setState(prevState => ({
+            ...prevState,
+            experts
+        }))
+      } 
     }
-    getAppData();
-    // Set up authentication observer
-    const unsubscribe = auth.onAuthStateChanged(user => setUserState({ user }));
+     
 
-    // clean up function
+    getData();
+    const unsubscribe = auth.onAuthStateChanged(user => setUserState({ user }));
     return function() {
-      // clean up subscriptions
       unsubscribe();
     }
-  }, [userState.user]);
+  },[userState.user]);
+  
 
   async function handleSubmit(e) {
-    if(!userState.user) return;
-
     e.preventDefault();
+    if(!!userState.user){
 
     if(state.editMode) {
       try {
@@ -57,13 +60,15 @@ export default function App() {
           experts,
           editMode: false,
           newExpert: {
-            expert: '', 
-            level: '3'
+            expert:"",
+            name: "",
+            email:"",
+            phone:"",
           }
         });
         
       } catch (error) {
-        
+       
       }
 
     } else {
@@ -71,19 +76,21 @@ export default function App() {
       try {
         const expert = await createExpert(state.newExpert, userState.user.uid);
     
-        setState({
-          experts: [...state.expert, expert],
+        setState( prevState => ( {
+          experts: [...prevState.experts, expert],
           newExpert: {
             expert: "",
-            level: "3"
-          }
-        });
+            names: "",
+            email:"",
+            phone:"",
+          },
+          editMode:prevState.editMode
+        }));
         
       } catch (error) {
-        // do something else so my users don't freak out 😄
         console.log(error);
       }
-    }
+    }}
   }
 
   function handleChange(e) {
@@ -91,10 +98,12 @@ export default function App() {
         ...prevState,
         newExpert: {
           ...prevState.newExpert,
-          [e.target.name]: e.target.value
+          [e.target.name]: e.target.value,
+          // uid: userState.user.uid
         }
     }));
-  }
+    console.log(state.newExpert)
+  };
 
 
   function handleEdit(id) {
@@ -105,12 +114,12 @@ export default function App() {
       newExpert: expertToEdit,
       editMode: true
     }));
-  }
+  };
 
   async function handleDelete(id) {
     if(!userState.user) return;
     try {
-      const experts = await deleteExpert(id, userState.user.uid);
+      const experts = await deleteExpert(id, userState.user);
       setState(prevState => ({
         ...prevState,
         experts
@@ -122,43 +131,52 @@ export default function App() {
 
   return (
     <>
-    <Header user={userState.user} />
-    <section>
-      {userState.user ? state.experts.map((s, i) => (
+    <Navbar/>
+    {/* <Expert/>
+    <Comment/> */}
+    {/* <Header user={userState.user} /> */}
+      {userState.user ? state.experts.map((e, i) => (
         <article key={i}>
-          <div>{s.expert}</div> 
-          <div>{s.level}</div>
+          <div>{e.expert}</div>
+          <div>{e.names}</div> 
+          <div>{e.email}</div>
+          <div>{e.phone}</div>
           <div 
             className="controls"
-            onClick={() => handleEdit(s._id)}
+            onClick={() => handleEdit(e._id)}
           >{'✏️'}</div>
           <div 
             className="controls"
-            onClick={() => handleDelete(s._id)}
+            onClick={() => handleDelete(e._id)}
           >{'🗑'}</div>
         </article>
       )) :
-        <article style={{padding: 15}}>No Experts to Show - Login to Get Started</article>
+        <article style={{padding: 15}}>Must login to get Started</article>
       }
       <hr />
+    
       <form onSubmit={handleSubmit}>
         <label>
-          <span>EXPERT</span>
+          <span>expert</span>
           <input name="expert" value={state.newExpert.expert} onChange={handleChange}/>
+          <label for="names">name:</label>
+          <input names="text" id="names" name="names"value={state.newExpert.names} onChange={handleChange}/>
+          <label for="phone">phone:</label>
+          <input phone="text" id="phone" name="phone"value={state.newExpert.phone} onChange={handleChange}/>
+          <label for="email">email:</label>
+          <input email="text" id="email" name="email"value={state.newExpert.email} onChange={handleChange}/>
+          {/* <span>COMMENT</span>
+          <select name="comment" value={state.newExpert.comment} onChange={handleChange}/>
+          <textarea name="message" rows="1" cols="10">Hello.</textarea>
+          <br></br> */}
+         
         </label>
+        <input type="submit"/>
         <label>
-          <span>LEVEL</span>
-          <select name="level" value={state.newExpert.level} onChange={handleChange}>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
+        <Footer user={userState.user}/>
+          <br></br>
         </label>
-        <button disabled={!userState.user}>{state.editMode ? 'EDIT COMMENt' : 'ADD COMMENT'}</button>
       </form>
-    </section>
     </>
-  );
-}
+    );
+  }

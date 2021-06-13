@@ -1,5 +1,4 @@
-
-/* .header {
+.Footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -8,9 +7,9 @@
     color: #ffffff;
     box-shadow: 1px 1px 2px 1px #fcfcfc;
     width: 100%;
-} */
+}
 
-.header nav {
+/* .header nav {
     display: flex;
     align-items: center; 
     justify-content: center;
@@ -29,4 +28,4 @@
 .navLink {
     cursor: pointer;
     font-weight:  700;
-}
+} */
