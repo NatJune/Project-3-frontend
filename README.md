@@ -3,7 +3,7 @@ This app was designed to allow the user to find an expert in the area of their b
 
 ## Getting Started
 - Netlify
-[click here] (https://react-project-frontend-3.netlify.app/)
+ (https://react-project-frontend-3.netlify.app/)
 - Trello
 [click here](https://trello.com/b/IdzruCzF/project-3)
 
