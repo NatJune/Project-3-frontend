@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import Navbar from './components/Navbar/Navbar';
 // import Expert from './components/Expert/Expert';
 // import Comment from './components/Comment/Comment';
+import image from './background.jpg'
 import "./App.css";
 import { 
   fetchExperts, 
@@ -14,7 +15,7 @@ import {
 
 export default function App() {
   const [state, setState] = useState({
-    experts: [],
+    experts: [{expert:"Business", names:"Smith", email:"gogo@yahoo.com", phone:"555-555-5555"}],
     newExpert: {
       expert: "",
       names: "",
@@ -30,14 +31,13 @@ export default function App() {
 
   useEffect(function() {
     async function getData() {
-      if(!!userState.user){
-        const allExperts = await fetchExperts(userState.user)
-          const experts = allExperts.filter(expert => expert.uid === userState.user.uid)
+      if(!userState.user) return;
+        const experts = await fetchExperts(userState.user)
+          // const experts = experts.filter(expert => expert.uid === userState.user)
         setState(prevState => ({
             ...prevState,
             experts
-        }))
-      } 
+        }));
     }
      
 
@@ -50,12 +50,12 @@ export default function App() {
   
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    if(!!userState.user){
-
+   
+    if(!userState.user) return;
+      e.preventDefault();
     if(state.editMode) {
       try {
-        const experts = await updateExpert(state.newExpert, userState.user.uid);
+        const experts = await updateExpert(state.newExpert, userState.user);
         setState({
           experts,
           editMode: false,
@@ -74,7 +74,7 @@ export default function App() {
     } else {
       // Create a new skill
       try {
-        const expert = await createExpert(state.newExpert, userState.user.uid);
+        const expert = await createExpert(state.newExpert, userState.user);
     
         setState( prevState => ( {
           experts: [...prevState.experts, expert],
@@ -90,7 +90,7 @@ export default function App() {
       } catch (error) {
         console.log(error);
       }
-    }}
+    }
   }
 
   function handleChange(e) {
@@ -102,7 +102,7 @@ export default function App() {
           // uid: userState.user.uid
         }
     }));
-    console.log(state.newExpert)
+    // console.log(state.newExpert)
   };
 
 
@@ -132,9 +132,7 @@ export default function App() {
   return (
     <>
     <Navbar/>
-    {/* <Expert/>
-    <Comment/> */}
-    {/* <Header user={userState.user} /> */}
+    <img style={{height: 300}} src={image} alt=""/>
       {userState.user ? state.experts.map((e, i) => (
         <article key={i}>
           <div>{e.expert}</div>
@@ -157,19 +155,15 @@ export default function App() {
     
       <form onSubmit={handleSubmit}>
         <label>
-          <span>expert</span>
+          <span>expert:</span>
           <input name="expert" value={state.newExpert.expert} onChange={handleChange}/>
-          <label for="names">name:</label>
+          <span>name:</span>
           <input names="text" id="names" name="names"value={state.newExpert.names} onChange={handleChange}/>
-          <label for="phone">phone:</label>
+          <span>phone:</span>
           <input phone="text" id="phone" name="phone"value={state.newExpert.phone} onChange={handleChange}/>
-          <label for="email">email:</label>
+          <span>email:</span>
           <input email="text" id="email" name="email"value={state.newExpert.email} onChange={handleChange}/>
-          {/* <span>COMMENT</span>
-          <select name="comment" value={state.newExpert.comment} onChange={handleChange}/>
-          <textarea name="message" rows="1" cols="10">Hello.</textarea>
-          <br></br> */}
-         
+  
         </label>
         <input type="submit"/>
         <label>
