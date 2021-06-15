@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001/api/experts';
+const BASE_URL = 'https://react-project-backend-3.herokuapp.com/api/experts';
 
 
 
