@@ -76,3 +76,8 @@ button:hover {
   color: white;
   background-color: #737495;
 } */
+
+.padding {
+  padding-left: 15px;
+  padding-right: 15px;
+}
